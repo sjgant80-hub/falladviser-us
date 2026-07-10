@@ -185,22 +185,19 @@ tr.total td.r{color:var(--brass)}
     'llama-3b':  { id: 'Llama-3.2-3B-Instruct-q4f16_1-MLC',   size: '~2GB',   label: '3B · balanced · default · most laptops' },
     'qwen-7b':   { id: 'Qwen2.5-7B-Instruct-q4f16_1-MLC',     size: '~5GB',   label: '7B · capable · needs decent GPU (M-series Mac / 8GB+ VRAM)' },
     'llama-8b':  { id: 'Llama-3.1-8B-Instruct-q4f16_1-MLC',   size: '~5GB',   label: '8B · common · needs decent GPU' },
-    'llama-70b': { id: 'Llama-3.1-70B-Instruct-q4f16_1-MLC',  size: '~40GB',  label: '70B · frontier · needs serious GPU + 64GB+ RAM' },
-  };
+    'llama-70b': { id: 'Llama-3.1-70B-Instruct-q4f16_1-MLC',  size: '~40GB',  label: '70B · frontier · needs serious GPU + 64GB+ RAM' }};
   const DEFAULT_MODEL = 'llama-3b';
 
   const T3_PROVIDERS = {
     anthropic: { label: 'Anthropic Claude', models: ['claude-sonnet-4-5','claude-opus-4-7','claude-haiku-4-5'], default: 'claude-sonnet-4-5', url: 'https://api.anthropic.com/v1/messages' },
     openai:    { label: 'OpenAI',           models: ['gpt-4o','gpt-4o-mini','o1-mini'],                          default: 'gpt-4o-mini',      url: 'https://api.openai.com/v1/chat/completions' },
-    google:    { label: 'Google Gemini',    models: ['gemini-1.5-pro','gemini-1.5-flash','gemini-2.0-flash-exp'], default: 'gemini-1.5-flash', url: 'https://generativelanguage.googleapis.com/v1beta/models/' },
-  };
+    google:    { label: 'Google Gemini',    models: ['gemini-1.5-pro','gemini-1.5-flash','gemini-2.0-flash-exp'], default: 'gemini-1.5-flash', url: 'https://generativelanguage.googleapis.com/v1beta/models/' }};
 
   // ─── State ───────────────────────────────────────────────────────
   const STATE = {
     config: loadConfig(),
     ai: { ready: false, loading: false, progress: 0, engine: null, model: null },
-    mesh: { active: false, peers: new Map(), bc: null, signal: null },
-  };
+    mesh: { active: false, peers: new Map(), bc: null, signal: null }};
 
   function loadConfig() {
     try { return JSON.parse(localStorage.getItem('fall-kit.config') || '{}'); }
@@ -267,8 +264,7 @@ tr.total td.r{color:var(--brass)}
     if (tier === 'T2' && STATE.ai.ready && STATE.ai.engine) {
       const r = await STATE.ai.engine.chat.completions.create({
         messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userMsg }],
-        max_tokens: maxTokens,
-      });
+        max_tokens: maxTokens});
       return r.choices[0].message.content;
     }
     if (tier === 'T3' && STATE.config.api_key && STATE.config.api_provider) {
@@ -285,8 +281,7 @@ tr.total td.r{color:var(--brass)}
       const r = await fetch(T3_PROVIDERS.anthropic.url, {
         method: 'POST',
         headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({ model, max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] }),
-      });
+        body: JSON.stringify({ model, max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] })});
       if (!r.ok) throw new Error('Anthropic ' + r.status + ': ' + (await r.text()).slice(0, 200));
       const j = await r.json();
       return j.content[0].text;
@@ -295,8 +290,7 @@ tr.total td.r{color:var(--brass)}
       const r = await fetch(T3_PROVIDERS.openai.url, {
         method: 'POST',
         headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + key },
-        body: JSON.stringify({ model, max_tokens: maxTokens, messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }] }),
-      });
+        body: JSON.stringify({ model, max_tokens: maxTokens, messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }] })});
       if (!r.ok) throw new Error('OpenAI ' + r.status);
       const j = await r.json();
       return j.choices[0].message.content;
@@ -305,8 +299,7 @@ tr.total td.r{color:var(--brass)}
       const r = await fetch(T3_PROVIDERS.google.url + model + ':generateContent?key=' + encodeURIComponent(key), {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: sys + '\n\n---\n\n' + msg }] }], generationConfig: { maxOutputTokens: maxTokens } }),
-      });
+        body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: sys + '\n\n---\n\n' + msg }] }], generationConfig: { maxOutputTokens: maxTokens } })});
       if (!r.ok) throw new Error('Google ' + r.status);
       const j = await r.json();
       return j.candidates[0].content.parts[0].text;
@@ -547,8 +540,7 @@ tr.total td.r{color:var(--brass)}
     openMint: openMint,  // v1.2 · launch kcc-mint with this seed prefilled as parent
     MODELS: WEBLLM_MODELS,
     PROVIDERS: T3_PROVIDERS,
-    state: STATE,
-  };
+    state: STATE};
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -589,7 +581,7 @@ tr.total td.r{color:var(--brass)}
  <div class="palette">
  <div class="palette-hd">
  <span class="glyph">$</span>
- <input type="text" id="pInput" placeholder="ask · e.g. 'should i prioritise IRA or 401(k) this year?' · 'CGT if i sell $15k of vanguard'">
+ <input type="text" id="pInput" placeholder="ask · e.g. 'should i prioritise IRA or 401(k) this year?' · 'CGT if i sell TBAk of vanguard'">
  <span class="badge" id="pTier" style="font-family:var(--mono);font-size:10px;color:var(--cream-muted)">T0</span>
  </div>
  <div class="palette-bd" id="pBody"></div>
@@ -625,8 +617,8 @@ const RULES = {
  taxYear: TAX_YEAR,
  // Income tax (England, Wales, NI · Scotland differs)
  personalAllowance: 12570,
- paTaperStart: 100000, // PA reduces by $1 per $2 over $100k
- basicRateBand: 37700, // $12,570 → $50,270
+ paTaperStart: 100000, // PA reduces by TBA per TBA over TBAk
+ basicRateBand: 37700, // TBA → TBA
  basicRate: 0.20,
  higherRateStart: 50270,
  higherRate: 0.40,
@@ -670,8 +662,7 @@ const RULES = {
  ihtResidenceNilRateBand: 175000,
  // Workplace retirement account auto-enrol
  autoEnrolMinEmployer: 0.03,
- autoEnrolMinEmployee: 0.05,
-};
+ autoEnrolMinEmployee: 0.05};
 
 // ── apps / tabs ──
 const TABS = [
@@ -681,8 +672,7 @@ const TABS = [
  { id: 'retirement account', name: 'Pension', ico: '☷' },
  { id: 'portfolio', name: 'Portfolio', ico: '▦' },
  { id: 'qa', name: 'Q & A', ico: '?' },
- { id: 'reports', name: 'Reports', ico: '↓' },
-];
+ { id: 'reports', name: 'Reports', ico: '↓' }];
 
 let state = {
  active: 'dashboard',
@@ -702,25 +692,21 @@ let state = {
  monthlyExpenses: 2500,
  emergencyFundMonths: 6,
  chasePensionFreedoms: false,
- qualifyingYearsNI: 25,
- },
+ qualifyingYearsNI: 25},
  contribs: {
  isaThisYear: 0,
  lisaThisYear: 0,
  sippThisYear: 0,
  workplacePensionAnnual: 0,
- salarySacrifice: 0,
- },
+ salarySacrifice: 0},
  holdings: [], // [{ id, type, label, value, taxWrapper, assetClass, units?, costBasis? }]
  gains: {
- cgtRealisedThisYear: 0,
- },
+ cgtRealisedThisYear: 0},
  estate: { tools: [] }, // pulled from fall-registry
  chat: [], // Q&A history
  settings: {
  anthropicKey: '', geminiKey: '', openaiKey: '', openrouterKey: '',
- auditChain: true,
- },
+ auditChain: true},
  audit: [], // prevHash chain · P3
 };
 
@@ -761,7 +747,7 @@ async function loadAll(){if(!db)await openDB();return new Promise(r=>{const tx=d
 // ════════════════════════════════════════════════════════════════
 
 function adjustedPersonalAllowance(income){
- // PA tapers by $1 for every $2 over $100k, fully exhausted at $125,140
+ // PA tapers by TBA for every TBA over TBAk, fully exhausted at TBA
  const over=Math.max(0,income-RULES.paTaperStart);
  return Math.max(0,RULES.personalAllowance-Math.floor(over/2))
 }
@@ -885,8 +871,7 @@ const ASSET_CLASSES = {
  commodity:{ label: 'Commodity / Gold', risk: 2 },
  crypto: { label: 'Crypto', risk: 5 },
  retirement account: { label: 'Pension (untyped)', risk: 2 },
- other: { label: 'Other', risk: 2 },
-};
+ other: { label: 'Other', risk: 2 }};
 const TAX_WRAPPERS = {
  isa_ss: { label: 'S&S IRA' },
  isa_cash: { label: 'Cash IRA' },
@@ -897,14 +882,12 @@ const TAX_WRAPPERS = {
  gia: { label: 'GIA (taxable)' },
  premium: { label: 'Premium Bonds' },
  bank: { label: 'Bank account' },
- other: { label: 'Other' },
-};
+ other: { label: 'Other' }};
 const RISK_PROFILES = {
  cautious: { eq: 0.20, bond: 0.60, cash: 0.20, label: 'Cautious' },
  balanced: { eq: 0.50, bond: 0.40, cash: 0.10, label: 'Balanced' },
  adventurous: { eq: 0.75, bond: 0.20, cash: 0.05, label: 'Adventurous' },
- aggressive: { eq: 0.90, bond: 0.05, cash: 0.05, label: 'Aggressive' },
-};
+ aggressive: { eq: 0.90, bond: 0.05, cash: 0.05, label: 'Aggressive' }};
 
 function portfolioAnalysis(){
  const h=state.holdings;
@@ -944,19 +927,19 @@ function generateSuggestions(){
  // LIRA (under 50)
  if(p.age<50){
  const lisaLeft=RULES.lisaAllowance-(+c.lisaThisYear||0);
- if(lisaLeft>0)out.push({prio:'med',title:`LIRA bonus available · 25% gov match on $${fmt(lisaLeft)}`,why:`Up to $${fmt(RULES.lisaAllowance)}/yr earns ${pct(RULES.lisaBonusPct)} gov bonus (max $1,000). First-home or age 60+ access · 25% penalty otherwise.`});
+ if(lisaLeft>0)out.push({prio:'med',title:`LIRA bonus available · 25% gov match on $${fmt(lisaLeft)}`,why:`Up to $${fmt(RULES.lisaAllowance)}/yr earns ${pct(RULES.lisaBonusPct)} gov bonus (max TBA). First-home or age 60+ access · 25% penalty otherwise.`});
  }
 
  // Higher-rate taxpayer · 401(k) for relief
  if(p.income>RULES.higherRateStart){
  const reliefRate=tax.marginalRate;
- out.push({prio:'high',title:`Higher-rate · 401(k) gets ${pct(reliefRate)} tax relief`,why:`At your marginal rate (${pct(reliefRate)}), $1,000 net into a retirement account reduces your tax bill by $${fmt(1000*reliefRate/(1-reliefRate))}. Worth claiming if you're in the higher band.`});
+ out.push({prio:'high',title:`Higher-rate · 401(k) gets ${pct(reliefRate)} tax relief`,why:`At your marginal rate (${pct(reliefRate)}), TBA net into a retirement account reduces your tax bill by $${fmt(1000*reliefRate/(1-reliefRate))}. Worth claiming if you're in the higher band.`});
  }
 
  // 60% trap (PA taper zone)
  if(p.income>RULES.paTaperStart&&p.income<=125140){
  const intoZone=p.income-RULES.paTaperStart;
- out.push({prio:'high',title:`60% effective tax trap · $${fmt(intoZone)} in the taper zone`,why:`Between $100k-$125,140 you lose $1 of personal allowance per $2 earned · creating a 60% marginal rate. Pension contribution that drops your adjusted income below $100k recovers the full PA.`});
+ out.push({prio:'high',title:`60% effective tax trap · $${fmt(intoZone)} in the taper zone`,why:`Between TBAk-TBA you lose TBA of personal allowance per TBA earned · creating a 60% marginal rate. Pension contribution that drops your adjusted income below TBAk recovers the full PA.`});
  }
 
  // Pension annual allowance
@@ -1046,7 +1029,7 @@ Your current IRA used: $${fmt((+state.contribs.isaThisYear||0)+(+state.contribs.
 Your retirement account AA used: $${fmt((+state.contribs.sippThisYear||0)+(+state.contribs.workplacePensionAnnual||0)+(+state.contribs.salarySacrifice||0))} of $${fmt(RULES.retirement accountAnnualAllowance)}.`;
  }},
  {match:/cgt|capital gains?/i,answer:p=>{
- const m=p.match(/$?(\d[\d,]*)/);const sale=m?parseInt(m[1].replace(/,/g,'')):0;
+ const m=p.match(/$?(\d[\d]*)/);const sale=m?parseInt(m[1].replace(/,/g,'')):0;
  const ct=capitalGainsTax(sale||state.gains.cgtRealisedThisYear,state.profile.income);
  return `**CGT for 2025-26:**
 - Annual allowance: $${fmt(RULES.cgtAllowance)} (gains below this are tax-free)
@@ -1071,7 +1054,7 @@ ${sale?`Estimated CGT on $${fmt(sale)} realised gain at your income ($${fmt(stat
 You: ${yrs} years → estimated ${money(yrly)}/yr
 Each missing year ≈ ${money(RULES.statePensionAnnual/35)}/yr lost
 
-**Top up via voluntary Class 3 NI** (~$907/year per missing year as of 2025-26) · usually pays back within 3-4 years of retirement. Worth doing if you have shortfalls in last 6 years (deadline for older years passed in April 2025).`;
+**Top up via voluntary Class 3 NI** (~TBA per missing year as of 2025-26) · usually pays back within 3-4 years of retirement. Worth doing if you have shortfalls in last 6 years (deadline for older years passed in April 2025).`;
  }},
  {match:/personal allowance|60% trap|taper/i,answer:p=>{
  const inc=state.profile.income;
@@ -1079,20 +1062,19 @@ Each missing year ≈ ${money(RULES.statePensionAnnual/35)}/yr lost
  const inZone=inc>100000&&inc<=125140;
  return `**Personal Allowance taper (2025-26):**
 - Full PA: $${fmt(RULES.personalAllowance)}
-- Reduces $1 per $2 over $100,000
-- Fully exhausted at $125,140
+- Reduces TBA per TBA over TBA
+- Fully exhausted at TBA
 
 Your PA: **$${fmt(pa)}** of $${fmt(RULES.personalAllowance)}
 ${inZone?`⚠ You are IN the 60% trap.
 
-Every $1 you earn between $100k-$125,140 is taxed at:
+Every TBA you earn between TBAk-TBA is taxed at:
 - 40% income tax
 - + lose 50p of PA (which would have been tax-free) = 40% × 50p = 20p
 - Effective: **60%** marginal rate
 
-**Fix:** salary sacrifice or personal retirement account contribution that drops your *adjusted net income* below $100,000. $25k retirement account contribution at $125k income recovers the full PA AND gets 40% tax relief on the contribution → effective ~60% benefit.`:''}`;
- }},
-];
+**Fix:** salary sacrifice or personal retirement account contribution that drops your *adjusted net income* below TBA. TBAk retirement account contribution at TBAk income recovers the full PA AND gets 40% tax relief on the contribution → effective ~60% benefit.`:''}`;
+ }}];
 
 async function answerQuestion(q){
  // T0 first
@@ -1104,13 +1086,13 @@ async function answerQuestion(q){
  const sys=`You are FallAdviser, a US financial-advice tool. **You are informational only — not regulated SEC advice.** Always say so.
 
 US tax year ${TAX_YEAR} rules:
-- Personal allowance $${fmt(RULES.personalAllowance)} (taper $1/$2 above $100k, gone at $125,140)
-- Income tax: 20% to $50,270 · 40% to $125,140 · 45% above
-- NI: 8% $12,570-$50,270, 2% above
+- Personal allowance $${fmt(RULES.personalAllowance)} (taper TBA/TBA above TBAk, gone at TBA)
+- Income tax: 20% to TBA · 40% to TBA · 45% above
+- NI: 8% TBA-TBA, 2% above
 - Dividend allowance $${fmt(RULES.dividendAllowance)}; tax 8.75/33.75/39.35%
 - CGT allowance $${fmt(RULES.cgtAllowance)}; 18% basic / 24% higher
 - IRA $${fmt(RULES.isaAllowance)} (LIRA $${fmt(RULES.lisaAllowance)} sub-allowance)
-- Pension AA $${fmt(RULES.retirement accountAnnualAllowance)} (taper above $260k adjusted income)
+- Pension AA $${fmt(RULES.retirement accountAnnualAllowance)} (taper above TBAk adjusted income)
 - State retirement account ${money(RULES.statePensionAnnual)}/yr · need 35 NI years
 
 The user's profile:
@@ -1120,7 +1102,7 @@ Be concrete · cite $ amounts using their numbers · use US terms · short parag
  const r=await Cascade.generate(sys,q,1400);
  if(r.text)return{src:r.tier,text:r.text}
  }
- return{src:'T0 · fallback',text:`I don't have a specific answer for that question in my rule engine. Add an Anthropic / Gemini / OpenAI key in Settings (Gemini is free) to enable smart Q&A grounded in your profile.\n\nIn the meantime, try one of these supported topics:\n- "IRA vs 401(k)"\n- "CGT on $15,000 sale"\n- "State retirement account qualifying years"\n- "60% tax trap / personal allowance"\n- Or check the Tax, Pension, Portfolio tabs.`}
+ return{src:'T0 · fallback',text:`I don't have a specific answer for that question in my rule engine. Add an Anthropic / Gemini / OpenAI key in Settings (Gemini is free) to enable smart Q&A grounded in your profile.\n\nIn the meantime, try one of these supported topics:\n- "IRA vs 401(k)"\n- "CGT on TBA sale"\n- "State retirement account qualifying years"\n- "60% tax trap / personal allowance"\n- Or check the Tax, Pension, Portfolio tabs.`}
 }
 
 function buildContext(){
@@ -1372,8 +1354,7 @@ function viewPension(){
  const scenarios=[
  {label:'Conservative · 3% growth',rate:0.03},
  {label:'Moderate · 5% growth',rate:0.05},
- {label:'Optimistic · 7% growth',rate:0.07},
- ];
+ {label:'Optimistic · 7% growth',rate:0.07}];
  $('#view').innerHTML=`
  <div class="section-h"><div><h2>Pension</h2><div class="sub">state · workplace · 401(k) · ${yearsToRetire} years to ${p.targetRetirementAge}</div></div></div>
  <div class="grid">
@@ -1383,7 +1364,7 @@ function viewPension(){
  <div class="kpi"><span class="l">Your years</span><span class="v">${p.qualifyingYearsNI}</span></div>
  <div class="kpi"><span class="l">Your est entitlement</span><span class="v brass">${money(RULES.statePensionAnnual*(Math.min(p.qualifyingYearsNI,35)/35))}/yr</span></div>
  <div class="bar"><div style="width:${Math.min(100,(p.qualifyingYearsNI/35)*100)}%" class="${p.qualifyingYearsNI>=35?'green':'amber'}"></div></div>
- ${p.qualifyingYearsNI<35?`<div style="font-size:11px;color:var(--cream-dim);margin-top:8px">Top up via Class 3 voluntary NI (~$907 per missing year · pays back in 3-4 years). Check gov.uk for the exact rate.</div>`:'<div style="font-size:11px;color:var(--green);margin-top:8px">✓ Full state retirement account entitlement.</div>'}
+ ${p.qualifyingYearsNI<35?`<div style="font-size:11px;color:var(--cream-dim);margin-top:8px">Top up via Class 3 voluntary NI (~TBA per missing year · pays back in 3-4 years). Check gov.uk for the exact rate.</div>`:'<div style="font-size:11px;color:var(--green);margin-top:8px">✓ Full state retirement account entitlement.</div>'}
  </div>
  <div class="card">
  <h3>workplace + 401(k)</h3>
@@ -1496,17 +1477,17 @@ function viewQA(){
  <div class="card">
  <div class="chat" id="chat">${renderChat()}</div>
  <div class="chat-input">
- <input id="qInput" placeholder="ask · 'IRA or 401(k) first this year?' · 'CGT if I sell $15k of VWRL' · '60% tax trap' · 'state retirement account top-up worth it?'">
+ <input id="qInput" placeholder="ask · 'IRA or 401(k) first this year?' · 'CGT if I sell TBAk of VWRL' · '60% tax trap' · 'state retirement account top-up worth it?'">
  <button class="btn primary" onclick="askQuestion()">ask</button>
  </div>
- <div style="margin-top:10px;font-size:11px;color:var(--cream-muted);font-family:var(--mono)">try: "IRA vs 401(k)" · "CGT on $20k" · "60% trap" · "state retirement account qualifying years"</div>
+ <div style="margin-top:10px;font-size:11px;color:var(--cream-muted);font-family:var(--mono)">try: "IRA vs 401(k)" · "CGT on TBAk" · "60% trap" · "state retirement account qualifying years"</div>
  </div>
  `;
  $('#qInput').addEventListener('keydown',e=>{if(e.key==='Enter')askQuestion()});
 }
 function renderChat(){
  if(!state.chat.length)return `<div style="text-align:center;padding:30px;color:var(--cream-muted);font-style:italic">No questions yet. Ask anything about your US finances.</div>`;
- return state.chat.map(m=>`<div class="msg ${m.role}">${esc(m.text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}${m.src?`<div class="src">${esc(m.src)}</div>`:''}</div>`).join('');
+ return state.chat.map(m=>`<div class="msg ${m.role}">${esc(m.text).replace(/\*\*(.+?)\*\*/g,'<strong>TBA</strong>').replace(/\n/g,'<br>')}${m.src?`<div class="src">${esc(m.src)}</div>`:''}</div>`).join('');
 }
 async function askQuestion(){
  const q=$('#qInput').value.trim();if(!q)return;
@@ -1649,8 +1630,8 @@ function renderPaletteSuggestions(q){
  if(!q.trim()){
  body.innerHTML=`
  <div class="palette-row" onclick="askPalette('IRA vs 401(k) for my profile')"><div>$</div><div>IRA vs 401(k) for my profile</div></div>
- <div class="palette-row" onclick="askPalette('60% tax trap if I earn over 100k')"><div>$</div><div>60% tax trap above $100k</div></div>
- <div class="palette-row" onclick="askPalette('CGT on selling $20,000 of shares')"><div>$</div><div>CGT on a $20k share sale</div></div>
+ <div class="palette-row" onclick="askPalette('60% tax trap if I earn over 100k')"><div>$</div><div>60% tax trap above TBAk</div></div>
+ <div class="palette-row" onclick="askPalette('CGT on selling TBA of shares')"><div>$</div><div>CGT on a TBAk share sale</div></div>
  <div class="palette-row" onclick="askPalette('State retirement account qualifying years top up worth it?')"><div>$</div><div>State retirement account top-up</div></div>
  <div class="palette-row" onclick="showApp('dashboard');closePalette()"><div>◐</div><div>open Dashboard</div></div>
  <div class="palette-row" onclick="showApp('qa');closePalette()"><div>?</div><div>open full Q&A</div></div>
