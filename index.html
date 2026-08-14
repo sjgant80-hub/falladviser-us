@@ -648,9 +648,9 @@ const RULES = {
  lisaBonusPct: 0.25,
  juniorIsaAllowance: 9000,
  // Pension
- retirement accountAnnualAllowance: 60000,
- retirement accountAATaperStart: 260000, // adjusted income
- retirement accountAATaperFloor: 10000,
+ pensionAnnualAllowance: 60000,
+ pensionAATaperStart: 260000, // adjusted income
+ pensionAATaperFloor: 10000,
  lumpSumAllowance: 268275, // LSA (replaced LTA)
  lumpSumDeathBenefit: 1073100, // LSDBA
  // State retirement account
@@ -842,7 +842,7 @@ function totalTax(){
 // ════════════════════════════════════════════════════════════════
 // PENSION PROJECTION · compound growth
 // ════════════════════════════════════════════════════════════════
-function retirement accountProjection(currentPot,annualContrib,years,growthRate){
+function pensionProjection(currentPot,annualContrib,years,growthRate){
  // years to retirement, growthRate as decimal (e.g. 0.05 for 5%)
  const r=growthRate;
  if(years<=0)return currentPot;
@@ -870,7 +870,7 @@ const ASSET_CLASSES = {
  reit: { label: 'REIT / Property', risk: 2 },
  commodity:{ label: 'Commodity / Gold', risk: 2 },
  crypto: { label: 'Crypto', risk: 5 },
- retirement account: { label: 'Pension (untyped)', risk: 2 },
+ pension: { label: 'Pension (untyped)', risk: 2 },
  other: { label: 'Other', risk: 2 }};
 const TAX_WRAPPERS = {
  isa_ss: { label: 'S&S IRA' },
@@ -943,9 +943,9 @@ function generateSuggestions(){
  }
 
  // Pension annual allowance
- const retirement accountUsed=(+c.sippThisYear||0)+(+c.workplacePensionAnnual||0)+(+c.salarySacrifice||0);
- const retirement accountLeft=RULES.retirement accountAnnualAllowance-retirement accountUsed;
- if(retirement accountLeft<5000&&retirement accountLeft>0)out.push({prio:'low',title:`Approaching retirement account annual allowance · $${fmt(retirement accountLeft)} left of $${fmt(RULES.retirement accountAnnualAllowance)}`,why:`Contributions above $${fmt(RULES.retirement accountAnnualAllowance)} (gross) are taxed at your marginal rate. Carry-forward from previous 3 years may apply.`});
+ const pensionUsed=(+c.sippThisYear||0)+(+c.workplacePensionAnnual||0)+(+c.salarySacrifice||0);
+ const pensionLeft=RULES.pensionAnnualAllowance-pensionUsed;
+ if(pensionLeft<5000&&pensionLeft>0)out.push({prio:'low',title:`Approaching retirement account annual allowance · $${fmt(pensionLeft)} left of $${fmt(RULES.pensionAnnualAllowance)}`,why:`Contributions above $${fmt(RULES.pensionAnnualAllowance)} (gross) are taxed at your marginal rate. Carry-forward from previous 3 years may apply.`});
 
  // CGT allowance
  const cgtLeft=RULES.cgtAllowance-state.gains.cgtRealisedThisYear;
@@ -1026,10 +1026,10 @@ You're at the ${(t.marginalRate*100).toFixed(0)}% marginal rate.
 - Emergency fund first, then match, then IRA/401(k) per the above
 
 Your current IRA used: $${fmt((+state.contribs.isaThisYear||0)+(+state.contribs.lisaThisYear||0))} of $${fmt(RULES.isaAllowance)}.
-Your retirement account AA used: $${fmt((+state.contribs.sippThisYear||0)+(+state.contribs.workplacePensionAnnual||0)+(+state.contribs.salarySacrifice||0))} of $${fmt(RULES.retirement accountAnnualAllowance)}.`;
+Your retirement account AA used: $${fmt((+state.contribs.sippThisYear||0)+(+state.contribs.workplacePensionAnnual||0)+(+state.contribs.salarySacrifice||0))} of $${fmt(RULES.pensionAnnualAllowance)}.`;
  }},
  {match:/cgt|capital gains?/i,answer:p=>{
- const m=p.match(/$?(\d[\d]*)/);const sale=m?parseInt(m[1].replace(/,/g,'')):0;
+ const m=p.match(/\$?(\d[\d]*)/);const sale=m?parseInt(m[1].replace(/,/g,'')):0;
  const ct=capitalGainsTax(sale||state.gains.cgtRealisedThisYear,state.profile.income);
  return `**CGT for 2025-26:**
 - Annual allowance: $${fmt(RULES.cgtAllowance)} (gains below this are tax-free)
@@ -1092,7 +1092,7 @@ US tax year ${TAX_YEAR} rules:
 - Dividend allowance $${fmt(RULES.dividendAllowance)}; tax 8.75/33.75/39.35%
 - CGT allowance $${fmt(RULES.cgtAllowance)}; 18% basic / 24% higher
 - IRA $${fmt(RULES.isaAllowance)} (LIRA $${fmt(RULES.lisaAllowance)} sub-allowance)
-- Pension AA $${fmt(RULES.retirement accountAnnualAllowance)} (taper above TBAk adjusted income)
+- Pension AA $${fmt(RULES.pensionAnnualAllowance)} (taper above TBAk adjusted income)
 - State retirement account ${money(RULES.statePensionAnnual)}/yr · need 35 NI years
 
 The user's profile:
@@ -1141,7 +1141,7 @@ Adjacent tools available: FallAccount (trades), FallLedger (GL), FallFlow (cashf
 function showApp(id){state.active=id;saveAll();render()}
 function render(){
  $('#tabNav').innerHTML=TABS.map(t=>`<button class="${state.active===t.id?'active':''}" onclick="showApp('${t.id}')"><span style="font-family:var(--serif);font-size:14px;color:var(--brass)">${t.ico}</span>${t.name}</button>`).join('');
- ({dashboard:viewDashboard,profile:viewProfile,tax:viewTax,retirement account:viewPension,portfolio:viewPortfolio,qa:viewQA,reports:viewReports})[state.active]();
+ ({dashboard:viewDashboard,profile:viewProfile,tax:viewTax,pension:viewPension,portfolio:viewPortfolio,qa:viewQA,reports:viewReports})[state.active]();
 }
 
 function viewDashboard(){
@@ -1150,7 +1150,7 @@ function viewDashboard(){
  const pa=portfolioAnalysis();
  const sugg=generateSuggestions();
  const isaUsedPct=((+state.contribs.isaThisYear||0)+(+state.contribs.lisaThisYear||0))/RULES.isaAllowance;
- const retirement accountUsedPct=((+state.contribs.sippThisYear||0)+(+state.contribs.workplacePensionAnnual||0)+(+state.contribs.salarySacrifice||0))/RULES.retirement accountAnnualAllowance;
+ const pensionUsedPct=((+state.contribs.sippThisYear||0)+(+state.contribs.workplacePensionAnnual||0)+(+state.contribs.salarySacrifice||0))/RULES.pensionAnnualAllowance;
  const efTarget=p.monthlyExpenses*p.emergencyFundMonths;
  const cashHoldings=state.holdings.filter(h=>h.assetClass==='cash'||h.taxWrapper==='bank'||h.taxWrapper==='isa_cash').reduce((s,h)=>s+(+h.value||0),0);
  const efPct=Math.min(1,cashHoldings/efTarget);
@@ -1178,8 +1178,8 @@ function viewDashboard(){
  <h3>allowance usage <span class="meta">${TAX_YEAR}</span></h3>
  <div class="kpi"><span class="l">IRA · ${money((+state.contribs.isaThisYear||0)+(+state.contribs.lisaThisYear||0))} / ${money(RULES.isaAllowance)}</span><span class="v">${(isaUsedPct*100).toFixed(0)}%</span></div>
  <div class="bar"><div style="width:${Math.min(100,isaUsedPct*100)}%" class="${isaUsedPct>0.9?'green':'amber'}"></div></div>
- <div class="kpi"><span class="l">Pension AA</span><span class="v">${(retirement accountUsedPct*100).toFixed(0)}%</span></div>
- <div class="bar"><div style="width:${Math.min(100,retirement accountUsedPct*100)}%" class="${retirement accountUsedPct>0.9?'green':'brass'}"></div></div>
+ <div class="kpi"><span class="l">Pension AA</span><span class="v">${(pensionUsedPct*100).toFixed(0)}%</span></div>
+ <div class="bar"><div style="width:${Math.min(100,pensionUsedPct*100)}%" class="${pensionUsedPct>0.9?'green':'brass'}"></div></div>
  <div class="kpi"><span class="l">Emergency fund</span><span class="v">${money(cashHoldings)} / ${money(efTarget)}</span></div>
  <div class="bar"><div style="width:${Math.min(100,efPct*100)}%" class="${efPct>=1?'green':'red'}"></div></div>
  <div class="kpi"><span class="l">NI years</span><span class="v">${p.qualifyingYearsNI} / ${RULES.statePensionQualifyingYears}</span></div>
@@ -1321,7 +1321,7 @@ function viewTax(){
  <tr><td>CGT allowance</td><td class="r">${money(RULES.cgtAllowance)}</td><td class="r">${money(Math.min(state.gains.cgtRealisedThisYear,RULES.cgtAllowance))}</td></tr>
  <tr><td>IRA</td><td class="r">${money(RULES.isaAllowance)}</td><td class="r">${money((+state.contribs.isaThisYear||0)+(+state.contribs.lisaThisYear||0))}</td></tr>
  <tr><td>LIRA (within IRA)</td><td class="r">${money(RULES.lisaAllowance)}</td><td class="r">${money(state.contribs.lisaThisYear||0)}</td></tr>
- <tr><td>Pension annual allowance</td><td class="r">${money(RULES.retirement accountAnnualAllowance)}</td><td class="r">${money((+state.contribs.sippThisYear||0)+(+state.contribs.workplacePensionAnnual||0)+(+state.contribs.salarySacrifice||0))}</td></tr>
+ <tr><td>Pension annual allowance</td><td class="r">${money(RULES.pensionAnnualAllowance)}</td><td class="r">${money((+state.contribs.sippThisYear||0)+(+state.contribs.workplacePensionAnnual||0)+(+state.contribs.salarySacrifice||0))}</td></tr>
  </table>
  </div>
  <div class="card">
@@ -1379,7 +1379,7 @@ function viewPension(){
  <table>
  <tr><th>scenario</th><th class="r">pot at ${p.targetRetirementAge}</th><th class="r">annuity income (6%)</th><th class="r">drawdown · 4% rule</th><th class="r">drawdown yrs</th></tr>
  ${scenarios.map(s=>{
- const pot=retirement accountProjection(currentPot,annualContrib,yearsToRetire,s.rate);
+ const pot=pensionProjection(currentPot,annualContrib,yearsToRetire,s.rate);
  const annuity=annuityIncomeFromPot(pot,0.06);
  const fourPct=pot*0.04;
  const dwYears=drawdownYears(pot,fourPct,s.rate*0.6);
@@ -1393,7 +1393,7 @@ function viewPension(){
  <div class="card">
  <h3>retirement income · combined estimate</h3>
  ${scenarios.map(s=>{
- const pot=retirement accountProjection(currentPot,annualContrib,yearsToRetire,s.rate);
+ const pot=pensionProjection(currentPot,annualContrib,yearsToRetire,s.rate);
  const fourPct=pot*0.04;
  const futureSP=RULES.statePensionAnnual*(Math.min(p.qualifyingYearsNI+yearsToRetire,35)/35);
  const combined=fourPct+futureSP;
@@ -1403,7 +1403,7 @@ function viewPension(){
  </div>
  <div class="card">
  <h3>allowances · limits</h3>
- <div class="kpi"><span class="l">Annual allowance</span><span class="v">${money(RULES.retirement accountAnnualAllowance)}</span></div>
+ <div class="kpi"><span class="l">Annual allowance</span><span class="v">${money(RULES.pensionAnnualAllowance)}</span></div>
  <div class="kpi"><span class="l">Used this year</span><span class="v">${money(annualContrib-p.income*p.employerContribPct)}</span></div>
  <div class="kpi"><span class="l">Lump sum allowance</span><span class="v">${money(RULES.lumpSumAllowance)}</span></div>
  <div class="kpi"><span class="l">Tax-free cash %</span><span class="v">25%</span></div>
@@ -1572,7 +1572,7 @@ ${t.bands.map(b=>`- ${b.label}: ${money(b.amount)} → ${money(b.tax)}`).join('\
 |---|---:|---:|
 | IRA | ${money(RULES.isaAllowance)} | ${money((+state.contribs.isaThisYear||0)+(+state.contribs.lisaThisYear||0))} |
 | LIRA (within IRA) | ${money(RULES.lisaAllowance)} | ${money(state.contribs.lisaThisYear||0)} |
-| Pension AA | ${money(RULES.retirement accountAnnualAllowance)} | ${money((+state.contribs.sippThisYear||0)+(+state.contribs.workplacePensionAnnual||0)+(+state.contribs.salarySacrifice||0))} |
+| Pension AA | ${money(RULES.pensionAnnualAllowance)} | ${money((+state.contribs.sippThisYear||0)+(+state.contribs.workplacePensionAnnual||0)+(+state.contribs.salarySacrifice||0))} |
 | CGT | ${money(RULES.cgtAllowance)} | ${money(state.gains.cgtRealisedThisYear)} |
 
 ## Portfolio
