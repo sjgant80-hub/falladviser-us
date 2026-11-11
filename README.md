@@ -2,7 +2,7 @@
 
 > Tax · retirement account · portfolio · Q&A · all on your device · US 2025-26 rules · estate-aware · informational, not regulated advice.
 >
-> v1 · prime **719** · MIT · ◊·κ=1
+> v1 · prime **719** · MIT
 
 **Live:** [sjgant80-hub.github.io/falladviser-us](https://sjgant80-hub.github.io/falladviser-us/)
 **Source:** [github.com/sjgant80-hub/falladviser-us](https://github.com/sjgant80-hub/falladviser-us)
@@ -180,7 +180,7 @@ Priority sorts the output (high → med → low).
 - The fall* estate doctrine — every gate point honoured
 - Same cascade pattern as [FallOffice](https://github.com/sjgant80-hub/falloffice), [FallMap](https://github.com/sjgant80-hub/fallmap), [TemuOracle](https://github.com/sjgant80-hub/temuoracle), [fall-prompt-gate](https://github.com/sjgant80-hub/fall-prompt-gate)
 
-⚒ Part of the [fall* estate](https://github.com/sjgant80-hub) · prime 719 · ◊·κ=1
+⚒ Part of the [fall* estate](https://github.com/sjgant80-hub)
 
 
 ## What this tool provides
