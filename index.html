@@ -1495,7 +1495,7 @@ function viewQA(){
 }
 function renderChat(){
  if(!state.chat.length)return `<div style="text-align:center;padding:30px;color:var(--cream-muted);font-style:italic">No questions yet. Ask anything about your US finances.</div>`;
- return state.chat.map(m=>`<div class="msg ${m.role}">${esc(m.text).replace(/\*\*(.+?)\*\*/g,'<strong>TBA</strong>').replace(/\n/g,'<br>')}${m.src?`<div class="src">${esc(m.src)}</div>`:''}</div>`).join('');
+ return state.chat.map(m=>`<div class="msg ${m.role}">${esc(m.text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}${m.src?`<div class="src">${esc(m.src)}</div>`:''}</div>`).join('');
 }
 async function askQuestion(){
  const q=$('#qInput').value.trim();if(!q)return;
